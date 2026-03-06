@@ -2,22 +2,30 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Admin Panel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin OCTABOT</title>
 <style>
-body{background:#111;color:#fff;font-family:sans-serif;padding:20px;}
+body { display:flex; flex-direction:column; align-items:center; font-family:sans-serif; padding:20px; }
+input, button { margin:10px; padding:10px; }
 </style>
 </head>
 <body>
-<h2>Messages de mise à jour</h2>
-<div id="updates"></div>
+<h1>Admin – Confirmer Paiement</h1>
+<input type="text" id="userId" placeholder="ID utilisateur">
+<button onclick="confirm('yes')">Oui – Confirmer</button>
+<button onclick="confirm('no')">Non – Refuser</button>
 
 <script>
-async function fetchUpdates(){
-    const res=await fetch('/api/update');
-    const data=await res.json();
-    document.getElementById('updates').innerText=data.message||'Aucune mise à jour';
+async function confirm(status){
+  const userId = document.getElementById("userId").value;
+  if(!userId) return alert("Entrez un userId !");
+  await fetch("/confirm-payment", {
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({ userId, status })
+  });
+  alert("Statut envoyé !");
 }
-fetchUpdates();
 </script>
 </body>
-</html>
+    </html>
