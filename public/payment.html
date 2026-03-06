@@ -2,24 +2,35 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Paiement M-Pesa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement</title>
 <style>
-body{display:flex;justify-content:center;align-items:center;height:100vh;background:#111;color:#fff;font-family:sans-serif;}
-button{padding:15px 30px;font-size:18px;background:#1abc9c;color:#111;border:none;border-radius:5px;cursor:pointer;}
+body { display:flex; justify-content:center; align-items:center; height:100vh; background:#444; color:#fff; font-family:sans-serif; flex-direction:column; text-align:center; }
+button { padding:10px 20px; margin:10px; cursor:pointer; }
 </style>
 </head>
 <body>
-<button id="payBtn">Payer via M-Pesa</button>
+<h1>Paiement</h1>
+<p>Pour payer et utiliser OCTABOT :</p>
+<p>Envoyez un message sur WhatsApp à : <strong>+243820737907</strong></p>
+<button onclick="openWhatsapp()">Envoyer message</button>
+<p>Après paiement, revenez ici et attendez confirmation...</p>
 
 <script>
-document.getElementById('payBtn').addEventListener('click', async ()=>{
-    const res=await fetch('/api/payment',{method:'POST'});
-    const data=await res.json();
-    if(data.success){
-        alert('Paiement confirmé !');
-        window.location.href='chatbot.html';
-    } else alert('Erreur paiement');
+function openWhatsapp() {
+  const text = encodeURIComponent("Salut OCTAVIO je vais payer 5000fc pour utiliser tes offres et créer mes cmd JS");
+  window.open(`https://wa.me/243820737907?text=${text}`, "_blank");
+}
+
+const userId = localStorage.getItem("userId");
+const socket = io();
+socket.emit("join-room", userId);
+
+socket.on("payment-response", status => {
+  if(status === "yes") window.location.href = "chatbot.html";
+  else if(status === "no") alert("Paiement non confirmé. La page sera fermée.");
 });
 </script>
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 </body>
 </html>
