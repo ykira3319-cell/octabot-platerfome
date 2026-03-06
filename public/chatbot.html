@@ -2,36 +2,44 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>OctaBot Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chatbot CMD</title>
 <style>
-body{background:#111;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;height:100vh;}
-#chat{flex:1;overflow-y:auto;padding:10px;}
-input,button{padding:10px;margin:5px;}
+body { display:flex; flex-direction:column; align-items:center; background:#000; color:#0f0; font-family:monospace; height:100vh; padding:20px; }
+#chat { flex:1; width:100%; border:1px solid #0f0; overflow:auto; padding:10px; }
+input, button { margin-top:10px; padding:10px; width:80%; }
 </style>
 </head>
 <body>
+<h1>Chatbot CMD</h1>
 <div id="chat"></div>
-<div>
-<input type="text" id="msg" placeholder="Tapez votre message...">
-<button id="send">Envoyer</button>
-</div>
+<input type="text" id="cmd" placeholder="Tapez votre commande JS">
+<button onclick="sendCmd()">Envoyer</button>
 
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-const chat=document.getElementById('chat');
-document.getElementById('send').addEventListener('click', async ()=>{
-    const msg=document.getElementById('msg').value;
-    if(!msg) return;
-    chat.innerHTML+='<div style="color:#1abc9c;">Vous: '+msg+'</div>';
-    const res=await fetch('/api/cmd',{
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({prompt:msg})
-    });
-    const data=await res.json();
-    chat.innerHTML+='<div style="color:#fff;">Bot: '+data.response+'</div>';
-    document.getElementById('msg').value='';
-    chat.scrollTop=chat.scrollHeight;
-});
+const chat = document.getElementById("chat");
+function addMessage(msg) { chat.innerHTML += msg+"<br>"; chat.scrollTop = chat.scrollHeight; }
+
+function sendCmd() {
+  const cmd = document.getElementById("cmd").value;
+  if(!cmd) return;
+  try {
+    const result = eval(cmd);
+    addMessage("> "+cmd);
+    addMessage(result);
+  } catch(e){
+    addMessage("> "+cmd);
+    addMessage("Erreur: "+e.message);
+  }
+  document.getElementById("cmd").value="";
+}
+
+const userId = localStorage.getItem("userId");
+const socket = io();
+socket.emit("join-room", userId);
+
+socket.on("update-msg", msg => addMessage("⚠️ "+msg));
 </script>
 </body>
-</html>
+    </html>
