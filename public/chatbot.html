@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>OctaBot Chat</title>
+<style>
+body{background:#111;color:#fff;font-family:sans-serif;display:flex;flex-direction:column;height:100vh;}
+#chat{flex:1;overflow-y:auto;padding:10px;}
+input,button{padding:10px;margin:5px;}
+</style>
+</head>
+<body>
+<div id="chat"></div>
+<div>
+<input type="text" id="msg" placeholder="Tapez votre message...">
+<button id="send">Envoyer</button>
+</div>
+
+<script>
+const chat=document.getElementById('chat');
+document.getElementById('send').addEventListener('click', async ()=>{
+    const msg=document.getElementById('msg').value;
+    if(!msg) return;
+    chat.innerHTML+='<div style="color:#1abc9c;">Vous: '+msg+'</div>';
+    const res=await fetch('/api/cmd',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({prompt:msg})
+    });
+    const data=await res.json();
+    chat.innerHTML+='<div style="color:#fff;">Bot: '+data.response+'</div>';
+    document.getElementById('msg').value='';
+    chat.scrollTop=chat.scrollHeight;
+});
+</script>
+</body>
+</html>
