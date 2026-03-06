@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel</title>
+<style>
+body{background:#111;color:#fff;font-family:sans-serif;padding:20px;}
+</style>
+</head>
+<body>
+<h2>Messages de mise à jour</h2>
+<div id="updates"></div>
+
+<script>
+async function fetchUpdates(){
+    const res=await fetch('/api/update');
+    const data=await res.json();
+    document.getElementById('updates').innerText=data.message||'Aucune mise à jour';
+}
+fetchUpdates();
+</script>
+</body>
+</html>
